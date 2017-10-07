@@ -41,7 +41,7 @@ def construct_graph_from_file(graph, file_path):
         graph.add_node(Node(newNode))
     for line in f:
         temp = line.split(":")
-        graph.add_edge(Edge(Node(int(temp[0])),Node(int(temp[1])),temp[2]))
+        graph.add_edge(Edge(Node(int(temp[0])),Node(int(temp[1])),int(temp[2])))
     return graph
 
 class Node(object):
@@ -134,6 +134,9 @@ class AdjacencyList(object):
             else:
                 return False
         return False
+    def distance(self, node_1, node_2):
+        if(node_1 in self.adjacency_list and node_2 in self.adjacency_list):
+            return (edge.weight for edge in self.adjacency_list if edge.from_node == node_1 and edge.to_node == node_2)
 class AdjacencyMatrix(object):
     def __init__(self):
         # adjacency_matrix should be a two dimensions array of numbers that
@@ -205,6 +208,8 @@ class AdjacencyMatrix(object):
     def __get_node_index(self, node):
         """helper method to find node index"""
         return self.nodes.index(node)
+    def distance(self, node_1, node_2):
+        pass
 
 class ObjectOriented(object):
     """ObjectOriented defines the edges and nodes as both list"""
@@ -256,3 +261,5 @@ class ObjectOriented(object):
             return True
         else:
             return False
+    def distance(self, node_1, node_2):
+        pass
