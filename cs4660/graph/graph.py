@@ -42,6 +42,7 @@ def construct_graph_from_file(graph, file_path):
     for line in f:
         temp = line.split(":")
         graph.add_edge(Edge(Node(int(temp[0])),Node(int(temp[1])),int(temp[2])))
+    f.close()
     return graph
 
 class Node(object):
@@ -135,8 +136,10 @@ class AdjacencyList(object):
                 return False
         return False
     def distance(self, node_1, node_2):
-        if(node_1 in self.adjacency_list and node_2 in self.adjacency_list):
-            return (edge.weight for edge in self.adjacency_list if edge.from_node == node_1 and edge.to_node == node_2)
+        if(node_1 in self.adjacency_list):
+            for edge in self.adjacency_list[node_1]:
+                if(edge.to_node == node_2):
+                    return edge.weight
 class AdjacencyMatrix(object):
     def __init__(self):
         # adjacency_matrix should be a two dimensions array of numbers that
@@ -209,7 +212,8 @@ class AdjacencyMatrix(object):
         """helper method to find node index"""
         return self.nodes.index(node)
     def distance(self, node_1, node_2):
-        pass
+        if(node_1 in self.nodes and node_2 in self.nodes):
+                return(self.adjacency_matrix[self.__get_node_index(node_1)][self.__get_node_index(node_2)])
 
 class ObjectOriented(object):
     """ObjectOriented defines the edges and nodes as both list"""
@@ -222,9 +226,7 @@ class ObjectOriented(object):
         for edge in self.edges:
             if edge.from_node == node_1 and edge.to_node == node_2:
                 return True
-            else:
-                return False
-
+        return False
     def neighbors(self, node):
         neighbor = []
         for edge in self.edges:
@@ -242,9 +244,9 @@ class ObjectOriented(object):
     def remove_node(self, node):
         if node in self.nodes:
             self.nodes.remove(node)
-        #    for edge in self.edges:
-         #       if edge.from_node is node:
-          #          self.edges.remove(edge)
+            for edge in self.edges:
+                if edge.from_node == node or edge.to_node == node:
+                    self.edges.remove(edge)
             return True
         else:
             return False
@@ -253,8 +255,11 @@ class ObjectOriented(object):
         if edge in self.edges:
             return False
         else:
-            self.edges.append(edge)
-            return True
+            if (edge.from_node in self.nodes and edge.to_node in self.nodes):
+                self.edges.append(edge)
+                return True
+            else:
+                return False
     def remove_edge(self, edge):
         if edge in self.edges:
             self.edges.remove(edge)
@@ -262,4 +267,8 @@ class ObjectOriented(object):
         else:
             return False
     def distance(self, node_1, node_2):
-        pass
+        if node_1 and node_2 in self.nodes:
+            for edge in self.edges:
+                if node_1 == edge.from_node and node_2 == edge.to_node:
+                    return edge.weight
+        #return (edge.weight for edege in self.edges if edge.from_node == node_1 and edge.to_node == node_2)
