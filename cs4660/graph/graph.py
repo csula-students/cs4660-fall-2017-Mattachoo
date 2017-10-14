@@ -62,7 +62,8 @@ class Node(object):
 
     def __hash__(self):
         return hash(self.data)
-
+    def __lt__(self,other):
+        return False
 class Edge(object):
     """Edge represents basic unit of graph connecting between two edges"""
     def __init__(self, from_node, to_node, weight):
@@ -81,7 +82,6 @@ class Edge(object):
 
     def __hash__(self):
         return hash((self.from_node, self.to_node, self.weight))
-
 
 class AdjacencyList(object):
     """

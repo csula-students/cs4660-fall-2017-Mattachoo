@@ -10,11 +10,10 @@ def bfs(graph, initial_node, dest_node):
     returns a list of actions going from the initial node to dest_node
     """
     nodes = []
-    parents = {}
     actions = []
-    end_tile = ((None, None, None))
+    end_tile = ((None,  None))
     q = Queue()
-    q.put((initial_node, 0, None))
+    q.put((initial_node, None))
     while(q.qsize() > 0):
         u = q.get()
         for node in graph.neighbors(u[0]):
@@ -22,18 +21,13 @@ def bfs(graph, initial_node, dest_node):
                 if node == dest_node:
                     end_tile = u
                 nodes.append(node)
-                q.put((node, graph.distance(u[2], node), u))
-    while (end_tile[2] is not None):
-        actions.append(gr.Edge(end_tile[2][0], end_tile[0], graph.distance(end_tile[2][0], end_tile[0])))
-        end_tile = end_tile[2]
+                q.put((node, u))
+    while (end_tile[1] is not None):
+        actions.append(gr.Edge(end_tile[1][0], end_tile[0], graph.distance(end_tile[1][0], end_tile[0])))
+        end_tile = end_tile[1]
     actions.reverse()
-   # print("\n" + str(actions))
-    #actions.append(gr.Edge(actions[len(actions)-1].to_node, dest_node, graph.distance(actions[len(actions)-1].to_node, dest_node)))
-    print("\n" + str(actions))
+    actions.append(gr.Edge(actions[len(actions)-1].to_node, dest_node, graph.distance(actions[len(actions)-1].to_node, dest_node)))
     return actions
-def bfs_help(graph, start, parents):
-    #for node in graph:
-    pass
 
 def dfs(graph, initial_node, dest_node):
     """
@@ -64,7 +58,37 @@ def dijkstra_search(graph, initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    pass
+    parents = {}
+    dist = {}
+    dist[initial_node] = 0
+    parents[initial_node] = None
+    actions = []
+    q = PriorityQueue()
+    q.put((0, initial_node))
+    v = None
+    for v in graph.neighbors(initial_node):
+        if v is not initial_node:
+            dist[v] = float('inf')
+            parents[v] = None
+        q.put((dist[v], v))
+    while(q.qsize() > 0):
+        u = q.get()
+        for node in graph.neighbors(u[1]):
+            if node not in dist:
+                dist[node] = 10000000
+            alt = u[0] + graph.distance(u[1],node)
+            if alt < dist[node]:
+                dist[node] = alt
+                parents[node] = u[1]
+                q.put((alt, node))
+    #            actions.append(gr.Edge(u[1], node, graph.distance(u[1], node)))
+    node = dest_node
+    while (parents[node] is not None):
+        actions.append(gr.Edge(parents[node], node, graph.distance(parents[node], node)))
+        node = parents[node]
+    actions.reverse()
+    #actions.append(gr.Edge(actions[len(actions)-1].to_node, dest_node, graph.distance(actions[len(actions)-1].to_node, dest_node)))
+    return actions
 
 def a_star_search(graph, initial_node, dest_node):
     """
