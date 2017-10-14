@@ -71,33 +71,38 @@ def bfs(start, end):
 def dikjstra(start, end):
     parents = {}
     dist = {}
-    dist[start] = 0
-    parents[start] = None
+    dist[start['id']] = 0
+    parents[start['id']] = None
     actions = []
     q = PriorityQueue()
-    q.put((0, start))
+    q.put((0, start['id']))
     v = None
-    for v in graph.neighbors(start):
+    visited = []
+    for v in get_state(start['id'])['neighbors']:
         if v['id'] is not start['id']:
-            dist[v] = float('inf')
-            parents[v] = None
-        q.put((dist[v], v))
+            dist[v['id']] = 0
+            parents[v['id']] = None
+        q.put((dist[v['id']], v['id']))
     while(q.qsize() > 0):
         u = q.get()
-        for room in get_state(u[1]):
-            if room not in dist:
-                dist[room] = 10000000
-            alt = u[0] + room['event']['effect']
-            if alt < dist[room]:
-                dist[room] = alt
-                parents[room] = u[1]
-                q.put((alt, room))
-    room = dest_node
-    while (parents[room] is not None):
-        actions.append(transition_state(parents[room]['id'], room['id']))
-        room = parents[room]
+        for room in get_state(u[1])['neighbors']:
+            if room['id'] not in dist:
+                dist[room['id']] = 10000000
+            if(room['id'] in visited):
+                continue
+            alt = u[0] + transition_state(u[1],room['id'])['event']['effect']
+            print(alt)
+            if alt > dist[room['id']] and room['id'] not in visited:
+                dist[room['id']] = alt
+                parents[room['id']] = u[1]
+                q.put((alt, room['id']))
+                visited.append(room['id'])
+                #print(visited)
+    room = end
+    while (parents[room['id']] is not None):
+        actions.append(transition_state(parents[room['id']], room['id']))
+        room = get_state(parents[room['id']])
     actions.reverse()
-    #actions.append(gr.Edge(actions[len(actions)-1].to_node, dest_node, graph.distance(actions[len(actions)-1].to_node, dest_node)))
     return actions
 if __name__ == "__main__":
     # Your code starts here
@@ -105,11 +110,13 @@ if __name__ == "__main__":
     dark_room = get_state('f1f131f647621a4be7c71292e79613f9') 
     #print(empty_room)
     #print(transition_state(empty_room['id'], empty_room['neighbors'][0]['id']))
+    '''
     bfs_result = bfs(empty_room, dark_room)
     bfs_hp = 0
     for action in bfs_result:
         bfs_hp += action['event']['effect']
         print(action)
     print("Total HP: "+ str(bfs_hp))
-    dij_result = dikjstra(empty_room, )
+    '''
+    dij_result = dikjstra(empty_room, dark_room)
 
