@@ -110,13 +110,14 @@ if __name__ == "__main__":
     dark_room = get_state('f1f131f647621a4be7c71292e79613f9') 
     #print(empty_room)
     #print(transition_state(empty_room['id'], empty_room['neighbors'][0]['id']))
-    '''
+    
     bfs_result = bfs(empty_room, dark_room)
     bfs_hp = 0
     for action in bfs_result:
         bfs_hp += action['event']['effect']
         print(action)
     print("Total HP: "+ str(bfs_hp))
-    '''
-    dij_result = dikjstra(empty_room, dark_room)
+    
+#    dij_result = dikjstra(empty_room, dark_room)
+
 
