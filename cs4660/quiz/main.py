@@ -58,7 +58,6 @@ def bfs(start, end):
         for room in get_state(u[0]['id'])['neighbors']:
             if room not in rooms:
                 if room['id'] == end['id']:
-                    print("reached")
                     end_tile = u
                 rooms.append(room)
                 q.put((room, u))
@@ -78,26 +77,29 @@ def dikjstra(start, end):
     q.put((0, start['id']))
     v = None
     visited = []
+    end_not_found = True
     for v in get_state(start['id'])['neighbors']:
         if v['id'] is not start['id']:
-            dist[v['id']] = 0
+            dist[v['id']] = float('inf')
             parents[v['id']] = None
-        q.put((dist[v['id']], v['id']))
-    while(q.qsize() > 0):
+        q.put((-dist[v['id']], v['id']))
+    while(q.qsize() > 0 and end_not_found ):
         u = q.get()
         for room in get_state(u[1])['neighbors']:
             if room['id'] not in dist:
-                dist[room['id']] = 10000000
+                dist[room['id']] = float('inf')
             if(room['id'] in visited):
                 continue
-            alt = u[0] + transition_state(u[1],room['id'])['event']['effect']
-            print(alt)
-            if alt > dist[room['id']] and room['id'] not in visited:
+            alt = u[0] - transition_state(u[1],room['id'])['event']['effect']
+            if alt < dist[room['id']]:
                 dist[room['id']] = alt
                 parents[room['id']] = u[1]
                 q.put((alt, room['id']))
                 visited.append(room['id'])
-                #print(visited)
+                if(room['id'] == end['id']):
+                    end_not_found = False
+                    break;
+     
     room = end
     while (parents[room['id']] is not None):
         actions.append(transition_state(parents[room['id']], room['id']))
@@ -113,11 +115,18 @@ if __name__ == "__main__":
     
     bfs_result = bfs(empty_room, dark_room)
     bfs_hp = 0
+    
+    print("BFS Path:")
     for action in bfs_result:
         bfs_hp += action['event']['effect']
         print(action)
     print("Total HP: "+ str(bfs_hp))
-    
-#    dij_result = dikjstra(empty_room, dark_room)
+    print("-------------------------------")
+    print("Dijkstra Path")
 
-
+    dij_hp = 0
+    dij_result = dikjstra(empty_room, dark_room)
+    for line in dij_result:
+        print(line)
+        dij_hp += line['event']['effect']
+    print("Total HP: " + str(dij_hp))
