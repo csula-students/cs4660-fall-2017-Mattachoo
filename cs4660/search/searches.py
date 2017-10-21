@@ -89,11 +89,52 @@ def dijkstra_search(graph, initial_node, dest_node):
     actions.reverse()
     #actions.append(gr.Edge(actions[len(actions)-1].to_node, dest_node, graph.distance(actions[len(actions)-1].to_node, dest_node)))
     return actions
-
+def heuristic(start, end):
+    dx = abs(start.data.x - end.data.x)
+    dy = abs(start.data.y - end.data.y)
+    return 1.8 * (dx + dy)
 def a_star_search(graph, initial_node, dest_node):
     """
     A* Search
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    pass
+    frontier = PriorityQueue()
+    explored = {}
+    parents = {}
+    frontier.put((0,initial_node))
+    gscore = {}
+    gscore[initial_node] = 0
+    fscore = {}
+    fscore[initial_node] = heuristic(initial_node, dest_node)
+    path = []
+    while(frontier.qsize() > 0):
+        print("Hit")
+        u = frontier.get()
+        if(u[1] ==  dest_node):
+            path.append(gr.Edge(u[1], graph))
+            return path
+        if u[1] in explored:
+            continue
+        if u[1] == dest_node:
+            curr = dest_node
+            while curr != dest_node:
+                node = parents[curr]
+                path = [gr.Edge(node, curr, graph.distance(node,curr))]
+                curr = node
+            break
+        for neighbor in graph.neighbors(u[1]):
+            if neighbor in explored:
+                continue
+            if neighbor in gscore:
+                temp = graph.distance(u[1], neighbor) + gscore[u[1]]
+            else:
+                temp = float('inf')
+            if neighbor in gscore:
+                if temp > gscore[neighbor]:
+                    continue
+            parents[neighbor] = u[1]
+            gscore[neighbor] = temp
+            fscore[neighbor] = gscore[neighbor] + heuristic(neighbor, dest_node)
+            frontier.put((fscore[neighbor], neighbor))
+    return path

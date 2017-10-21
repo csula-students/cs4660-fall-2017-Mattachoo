@@ -271,4 +271,3 @@ class ObjectOriented(object):
             for edge in self.edges:
                 if node_1 == edge.from_node and node_2 == edge.to_node:
                     return edge.weight
-        #return (edge.weight for edege in self.edges if edge.from_node == node_1 and edge.to_node == node_2)
